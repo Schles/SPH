@@ -2,13 +2,11 @@
 #define PD_SPH_H
 
 
-#include "SmoothedParticleHydrodynamics.h"
-
+#include "SPH.h"
 #include "BoundaryPsi.h"
-
 #include "../util/fluidtime.h"
 
-class PBSPH : protected SmoothedParticleHydrodynamics {
+class PBSPH : protected SPH {
 
  public:
   PBSPH(ParticleManager* particleManager, Parameters *params);

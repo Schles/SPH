@@ -11,5 +11,7 @@ struct Statistics {
 
   double avg_fluid_neighbors = 0;
   double avg_neighbors = 0;
-    
+
+  double timePerFrame = 0.0;
+  
 };

@@ -2,9 +2,7 @@
 #define BOUNDARY_PSI_H
 
 
-#include "SmoothedParticleHydrodynamics.h"
-
-#include "../util/fluidtime.h"
+#include "SPH.h"
 
 class BoundaryPsi {
 
@@ -20,9 +18,7 @@ class BoundaryPsi {
   CompactNSearch::NeighborhoodSearch *m_neighborhoodsearch;
   Kernel *m_kernel;
   
-  void calc_boundary_psi_i(unsigned int pointSet);
-  
-  
+  void calc_boundary_psi_i(unsigned int pointSet);  
 };
 
 

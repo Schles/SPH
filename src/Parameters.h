@@ -49,7 +49,6 @@ struct Parameters {
   
   const Eigen::Vector3d graviationalForce = Eigen::Vector3d(0.0, -98.1, 0.0); // scale with 10 to increase sim speed
 
-
   
   // step size settings
   
@@ -63,20 +62,5 @@ struct Parameters {
   // Debug
 
   int observeParticle = -1;
-
-
-  // informations
-  
-  double avg_density = 0;
-  double max_density = 0;
-
-  double min_velo = 0;
-  double avg_velo = 0;
-  double max_velo = 0;
-
-  double avg_fluid_neighbors = 0;
-  double avg_neighbors = 0;
-
-  double timePerFrame = 0.0;
   
 };

@@ -40,14 +40,13 @@
 #include <iomanip>
 #include <cstdlib>
 
-#include "Exercise2.h"
 
 #include "Scenes.h"
-#include "ParticleManager.h"
-#include "ParticleExporter.h"
+#include "particle/ParticleManager.h"
+#include "particle/ParticleExporter.h"
 #include "Parameters.h"
 
-#include "SPH/TimeStep.h"
+#include "sph/TimeStep.h"
 
 
 using namespace Eigen;
@@ -392,10 +391,12 @@ main(int argc, char* argv[])
     
     // Setup AntTweakBar.
     {
+      Statistics* stats = ((SPH*)m_SPH)->m_statistics;
+      
         TwBar* bar = GLviz::twbar();
 
         TwAddVarRO(bar, "FrameTime", TW_TYPE_DOUBLE,
-            &m_Parameters.timePerFrame, " precision=0 label='ms per Frame' group='Simulation' ");
+            &stats->timePerFrame, " precision=0 label='ms per Frame' group='Simulation' ");
 	
         TwAddVarRW(bar, "Stop", TW_TYPE_BOOLCPP,
             &g_stop_simulation,
@@ -448,27 +449,26 @@ main(int argc, char* argv[])
             &m_Parameters.viscosity,
             " min=0 max=1 step=0.01 key=3 help='B' group='Stiffness Coefficient' ");
 	
-	
         TwAddVarRO(bar, "Avg. Density", TW_TYPE_DOUBLE,
-            &m_Parameters.avg_density, " precision=3 label='Avg. Density' group='Info' ");
+            &stats->avg_density, " precision=3 label='Avg. Density' group='Info' ");
 
 	TwAddVarRO(bar, "Max. Density", TW_TYPE_DOUBLE,
-            &m_Parameters.max_density, " precision=3 label='Max. Density' group='Info' ");
+            &stats->max_density, " precision=3 label='Max. Density' group='Info' ");
 
 	TwAddVarRO(bar, "Min. Velo", TW_TYPE_DOUBLE,
-            &m_Parameters.min_velo, " precision=3 label='Min. Velo' group='Info' ");
+            &stats->min_velo, " precision=3 label='Min. Velo' group='Info' ");
 	
 	TwAddVarRO(bar, "Avg. Velo", TW_TYPE_DOUBLE,
-            &m_Parameters.avg_velo, " precision=3 label='Avg. Velo' group='Info' ");
+            &stats->avg_velo, " precision=3 label='Avg. Velo' group='Info' ");
 
 	TwAddVarRO(bar, "Max. Velo", TW_TYPE_DOUBLE,
-            &m_Parameters.max_velo, " precision=3 label='Max. Velo' group='Info' ");
+            &stats->max_velo, " precision=3 label='Max. Velo' group='Info' ");
 
 	TwAddVarRO(bar, "Avg. Fluid Neighbors", TW_TYPE_DOUBLE,
-		   &m_Parameters.avg_fluid_neighbors, " precision=3 label='Avg. Fluid Neighbors' group='Info' ");
+		   &stats->avg_fluid_neighbors, " precision=3 label='Avg. Fluid Neighbors' group='Info' ");
 	
 	TwAddVarRO(bar, "Avg. Neighbors", TW_TYPE_DOUBLE,
-		   &m_Parameters.avg_neighbors, " precision=3 label='Avg. Neighbors' group='Info' ");
+		   &stats->avg_neighbors, " precision=3 label='Avg. Neighbors' group='Info' ");
 	
 
 	/*

@@ -5,19 +5,23 @@
 #include <CompactNSearch>
 #include <omp.h>
 #include <array>
+
+#include "../Statistics.h"
 #include "../kernel/Kernel.h"
 #include "../kernel/KernelDensity.h"
 #include "../Parameters.h"
-#include "../ParticleManager.h"
+#include "../particle/ParticleManager.h"
 
 
-class SmoothedParticleHydrodynamics
+class SPH
 {
 public:
 	// initialize new SPH system
-	SmoothedParticleHydrodynamics(ParticleManager *manager, Parameters *params);
-	
+	SPH(ParticleManager *manager, Parameters *params);
+
+
 	std::vector<Particles*> *m_particleObjects;
+	Statistics* m_statistics;
 	
 	// update particle positions using semi-implicit euler method
 	void compute_semi_implicit_euler(int fluidIndex, int particle_id, double _timestep);	
@@ -29,16 +33,13 @@ protected:
 	Kernel *m_kernel;
 	Parameters* _parameters;
 	ParticleManager* particleManager;
-
+	
 	CompactNSearch::NeighborhoodSearch m_neighborhoodsearch;
 	
 	void compute_color(int fluidIndex, int particleId);
 	void compute_stats();
 
-
-	bool debugP(int id);	
-
-		  
+	bool debugP(int id);			  
 };
 
 

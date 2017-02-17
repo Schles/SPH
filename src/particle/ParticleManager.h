@@ -6,7 +6,7 @@
 #include <Eigen/Core>
 
 #include "Particles.h"
-#include "Parameters.h"
+#include "../Parameters.h"
 
 class ParticleManager {
 public:

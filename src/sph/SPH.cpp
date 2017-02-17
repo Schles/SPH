@@ -1,5 +1,5 @@
 
-#include "SmoothedParticleHydrodynamics.h"
+#include "SPH.h"
 
 #include <iostream>
 #include <memory>
@@ -10,20 +10,17 @@
 
 #include "../util/fluidtime.h"
 
-SmoothedParticleHydrodynamics::SmoothedParticleHydrodynamics(ParticleManager* manager, Parameters *params)
+SPH::SPH(ParticleManager* manager, Parameters *params)
 	: m_neighborhoodsearch( 2.0 * params->h),
 	  _parameters(params),
 	  particleManager(manager)
 {
+  m_statistics = new Statistics();
   m_kernel = new Kernel(params->kernelFunctionId, params->h);
   m_particleObjects = &manager->m_particleObjects;
-  
-  // Add fluids
 
-  // add boundrys
-
+  // Add particles
   for(int i = 0; i < m_particleObjects->size(); i++){
-
     if(particleManager->isFluid(i)){
       m_neighborhoodsearch.add_point_set(&particleManager->getPosition(i,0)[0], particleManager->getObjectSize(i), true, true);
     } else {    
@@ -32,17 +29,15 @@ SmoothedParticleHydrodynamics::SmoothedParticleHydrodynamics(ParticleManager* ma
   }
 }
 
-
-
 //compute neighborhood
-void SmoothedParticleHydrodynamics::nhSearch(){
+void SPH::nhSearch(){
   m_neighborhoodsearch.find_neighbors();
 }
 
 
-void SmoothedParticleHydrodynamics::compute_semi_implicit_euler(int fluidIndex, int i, double _timestep)
-{	
-  // semi-implicit euler update
+// semi-implicit euler update
+void SPH::compute_semi_implicit_euler(int fluidIndex, int i, double _timestep){	
+
   Fluid* fluid = particleManager->getFluidObject(fluidIndex);
 
   // Update velocity
@@ -54,19 +49,16 @@ void SmoothedParticleHydrodynamics::compute_semi_implicit_euler(int fluidIndex, 
 
 
 // Utility, computes the colors for each particle
-void SmoothedParticleHydrodynamics::compute_color(int fluidIndex, int pid){
+void SPH::compute_color(int fluidIndex, int pid){
 
   Fluid* fluid = particleManager->getFluidObject(fluidIndex);
-  
   particleManager->m_particleObjects[fluidIndex]->color[pid] = Eigen::Vector3d(0.0, 0.0, 1.0) * fluid->density[pid] / ( 2.0 * _parameters->restDensity);
 
 }
 
-void SmoothedParticleHydrodynamics::initParticles(){
+void SPH::initParticles(){
 
-  // calc mass of particles
-  // based on particle radius
-
+  // calc mass of particles, based on particle radius
   double diameter = 2.0 * _parameters->particleRadius;
   _parameters->particleMass = _parameters->particleMassScaling * pow(diameter, 3) * _parameters->restDensity;
 
@@ -74,18 +66,18 @@ void SmoothedParticleHydrodynamics::initParticles(){
   // reposition particle at start
   for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
     unsigned int fluidIndex = particleManager->fluidIndicies[fI];
-  
     for(int i = 0; i < particleManager->getObjectSize(fluidIndex); i++){
+      
       (*m_particleObjects)[fluidIndex]->position[i] = (*m_particleObjects)[fluidIndex]->position0[i];
       (*m_particleObjects)[fluidIndex]->velocity[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
-      (*m_particleObjects)[fluidIndex]->color[i] = Eigen::Vector3d(0.0, 0.0, 0.0);	  
+      (*m_particleObjects)[fluidIndex]->color[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
+      
     }
   }
-
 }
 
 
-void SmoothedParticleHydrodynamics::updateTimeStepCFL(){
+void SPH::updateTimeStepCFL(){
   double stepSize = _parameters->stepSize;
 
   double maxVelo = 0.1;
@@ -117,7 +109,7 @@ void SmoothedParticleHydrodynamics::updateTimeStepCFL(){
 
 }
 
-void SmoothedParticleHydrodynamics::compute_stats(){
+void SPH::compute_stats(){
       double avg_density = 0;
       double max_density = 0;
 
@@ -169,21 +161,22 @@ void SmoothedParticleHydrodynamics::compute_stats(){
 	  }
 	}
       }
-      _parameters->avg_density = avg_density / fluidSize;
-      _parameters->max_density = max_density;
+      
+      m_statistics->avg_density = avg_density / fluidSize;
+      m_statistics->max_density = max_density;
 
 
-      _parameters->min_velo = min_velo;
-      _parameters->avg_velo = avg_velo / fluidSize;
-      _parameters->max_velo = max_velo;
-
-      _parameters->avg_neighbors = avg_neighbors / fluidSize;
-      _parameters->avg_fluid_neighbors = avg_fluid_neighbors / fluidSize;
+      m_statistics->min_velo = min_velo;
+      m_statistics->avg_velo = avg_velo / fluidSize;
+      m_statistics->max_velo = max_velo;
+      
+      m_statistics->avg_neighbors = avg_neighbors / fluidSize;
+      m_statistics->avg_fluid_neighbors = avg_fluid_neighbors / fluidSize;
       
 }
 
 
-bool SmoothedParticleHydrodynamics::debugP(int id){
+bool SPH::debugP(int id){
   if( id == _parameters->observeParticle)
     return true;
 

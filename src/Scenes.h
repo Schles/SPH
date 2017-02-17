@@ -6,17 +6,16 @@
 
 #include <Eigen/Core>
 
-#include "Particles.h"
+#include "particle/Particles.h"
 #include "Parameters.h"
 
-#include "ParticleFactory.h"
+#include "particle/ParticleFactory.h"
 
 class Scenes : public ParticleFactory {
 public:
         Scenes(Parameters* params);
-		
-        ParticleManager* createSetup(unsigned int i, double h);
 
+        ParticleManager* createSetup(unsigned int i, double h);
 	void createBoundingBox(ParticleManager* manager, Eigen::Vector3d start, Eigen::Vector3d end, double h);
 };
 

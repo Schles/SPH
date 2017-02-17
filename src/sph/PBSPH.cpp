@@ -1,17 +1,19 @@
 #include "PBSPH.h"
 
-PBSPH::PBSPH(ParticleManager* particleManager, Parameters* params) : SmoothedParticleHydrodynamics(particleManager, params) {
+PBSPH::PBSPH(ParticleManager* particleManager, Parameters* params) : SPH(particleManager, params) {
   boundaryPsi = new BoundaryPsi(&m_neighborhoodsearch, particleManager, params, m_kernel);
 }
 
 void PBSPH::compute_position_update(int fluidIndex, int _particle_id){
   Fluid* fluidObject = particleManager->getFluidObject(fluidIndex);
+  
   fluidObject->position[_particle_id] += fluidObject->delta_x[_particle_id];
   fluidObject->delta_x[_particle_id] = Eigen::Vector3d(0.0, 0.0, 0.0);
 }
 
 void PBSPH::compute_prev_position_update(int fluidIndex, int _particle_id){
   Fluid* fluidObject = particleManager->getFluidObject(fluidIndex);
+  
   fluidObject->last_pos[_particle_id] = fluidObject->old_pos[_particle_id];
   fluidObject->old_pos[_particle_id] = fluidObject->position[_particle_id];
 }

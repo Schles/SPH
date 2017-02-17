@@ -21,17 +21,11 @@ endif (UNIX)
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/resources/" GLVIZ_RESOURCES_DIR)
 configure_file(config.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/config.hpp")
 
-file(GLOB SOURCES "kernel/*.cpp" "ex/*.cpp" "SPH/*.cpp" "kernel/*.h" "ex/*.h" "SPH/*.h" "Particles.h")
+file(GLOB SOURCES "kernel/*.cpp" "sph/*.cpp" "kernel/*.h"  "sph/*.h" "particle/*.cpp" "particle/*.h")
 
 add_executable(FluidSim
     main.cpp
     Scenes.cpp
-    ParticleFactory.cpp
-    
-    ParticleManager.cpp
-    ParticleManager.cpp
-    ParticleExporter.cpp
-    ParticleExporter.h
     ${SOURCES}
 )
 
@@ -40,9 +34,9 @@ include_directories(
     ${glviz_INCLUDE_DIRS}
     "../CompactNSearch/include"
     "kernel"
-	"ex"
-	"util"
-	"SPH"
+    "util"
+    "sph"	
+    "particle"
 )
 
 add_dependencies(FluidSim

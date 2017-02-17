@@ -157,7 +157,7 @@ void TimeStepPBSPH::step(double deltaTime){
 
   long t2 = Time::getMilliseconds();
 
-  _parameters->timePerFrame = t2 - t1;
+  m_statistics->timePerFrame = t2 - t1;
 }
 
 
