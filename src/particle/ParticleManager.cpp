@@ -22,16 +22,13 @@ void ParticleManager::updateDynamicBoundary(double time){
   deltaX *= amp *  y;
   
   for (int i = 2; i < m_particleObjects.size(); ++i){
-
-
       for(int j = 0; j < m_particleObjects[i]->position.size(); j++){
 	m_particleObjects[i]->position[j] = m_particleObjects[i]->position0[j] + deltaX;
       }
-
   }
 }
 
-void ParticleManager::updateFluidPositions(unsigned int point_set){
+void ParticleManager::castFluidPositions(unsigned int point_set){
   
   for (int i = 0; i < m_particleObjects[point_set]->position.size(); ++i)
 	{
@@ -73,7 +70,6 @@ unsigned int ParticleManager::addParticles(Particles* particles){
   unsigned int size = particles->position.size();
 
   resizeOutputBuffer(index, size);
-
 
   return index;
 }

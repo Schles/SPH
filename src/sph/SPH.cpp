@@ -17,16 +17,20 @@ SPH::SPH(ParticleManager* manager, Parameters *params)
 {
   m_statistics = new Statistics();
   m_kernel = new Kernel(params->kernelFunctionId, params->h);
-  m_particleObjects = &manager->m_particleObjects;
+  
 
   // Add particles
-  for(int i = 0; i < m_particleObjects->size(); i++){
-    if(particleManager->isFluid(i)){
-      m_neighborhoodsearch.add_point_set(&particleManager->getPosition(i,0)[0], particleManager->getObjectSize(i), true, true);
-    } else {    
-      m_neighborhoodsearch.add_point_set( &(particleManager->getBoundaryObject(i)->position[0][0]), particleManager->getObjectSize(i), (*m_particleObjects)[i]->isDynamic, false);
-    }
+  for(int i = 0; i < particleManager->getParticleGroupSize(); i++){
+    addParticleSet(i);
   }
+}
+
+void SPH::addParticleSet(int fluidIndex){
+    if(particleManager->isFluid(fluidIndex)){
+      m_neighborhoodsearch.add_point_set(&particleManager->getPosition(fluidIndex,0)[0], particleManager->getObjectSize(fluidIndex), true, true);
+    } else {    
+      m_neighborhoodsearch.add_point_set( &(particleManager->getBoundaryObject(fluidIndex)->position[0][0]), particleManager->getObjectSize(fluidIndex), particleManager->getObject(fluidIndex)->isDynamic, false);
+    }
 }
 
 //compute neighborhood
@@ -51,8 +55,28 @@ void SPH::compute_semi_implicit_euler(int fluidIndex, int i, double _timestep){
 // Utility, computes the colors for each particle
 void SPH::compute_color(int fluidIndex, int pid){
 
+  bool niceColor = true;
+  
   Fluid* fluid = particleManager->getFluidObject(fluidIndex);
-  particleManager->m_particleObjects[fluidIndex]->color[pid] = Eigen::Vector3d(0.0, 0.0, 1.0) * fluid->density[pid] / ( 2.0 * _parameters->restDensity);
+
+  if(niceColor){
+
+    Eigen::Vector3d color(0.0, 0.0, 1.0);
+    
+    double ratio = fluid->density[pid] / _parameters->restDensity; 
+    
+    double lPerc = std::max(1.0 - ratio, 0.0);
+    
+    double uPerc = std::max(ratio - 1.0, 0.0);
+
+    color += lPerc * Eigen::Vector3d(1.0, 1.0, 0.0);
+
+    //    color += uPerc * Eigen::Vector3d(3.0, 3.0, 3.0);
+    
+
+    particleManager->m_particleObjects[fluidIndex]->color[pid] = color;
+  } else
+    particleManager->m_particleObjects[fluidIndex]->color[pid] = Eigen::Vector3d(0.0, 0.0, 1.0) * fluid->density[pid] / ( 2.0 * _parameters->restDensity);
 
 }
 
@@ -68,9 +92,9 @@ void SPH::initParticles(){
     unsigned int fluidIndex = particleManager->fluidIndicies[fI];
     for(int i = 0; i < particleManager->getObjectSize(fluidIndex); i++){
       
-      (*m_particleObjects)[fluidIndex]->position[i] = (*m_particleObjects)[fluidIndex]->position0[i];
-      (*m_particleObjects)[fluidIndex]->velocity[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
-      (*m_particleObjects)[fluidIndex]->color[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
+      particleManager->getObject(fluidIndex)->position[i] =  particleManager->getObject(fluidIndex)->position0[i];
+      particleManager->getObject(fluidIndex)->velocity[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
+      particleManager->getObject(fluidIndex)->color[i] = Eigen::Vector3d(0.0, 0.0, 0.0);
       
     }
   }

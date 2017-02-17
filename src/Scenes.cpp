@@ -74,6 +74,10 @@ ParticleManager* Scenes::createSetup(unsigned int i, double h){
 	  particles = createFluidTranslate(Eigen::Vector3d(0.5, 0.0, 0.0), fluidSize, fluidDensity);
 	  particleIndex = particleManager->addParticles(particles);
 	  particleManager->fluidIndicies.push_back(particleIndex);
+
+	  particles = createFluidTranslate(Eigen::Vector3d(0.5, 0.7, 0.0), fluidSize, fluidDensity);
+	  particleIndex = particleManager->addParticles(particles);
+	  particleManager->fluidIndicies.push_back(particleIndex);
 	  
 
 	  
@@ -86,9 +90,9 @@ ParticleManager* Scenes::createSetup(unsigned int i, double h){
 
 */	  
 
-	  start = Eigen::Vector3d(-0.8, -0.6, -0.3);;
+	  start = Eigen::Vector3d(-0.85, -0.6, -0.3);;
 	  
-          end = Eigen::Vector3d(0.85, 1.0, 0.3);
+          end = Eigen::Vector3d(0.85, 1.5, 0.3);
 
 
 	  createBoundingBox(particleManager, start, end, h/2);

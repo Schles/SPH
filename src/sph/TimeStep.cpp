@@ -55,33 +55,40 @@ void TimeStepPBSPH::init(){
 void TimeStepPBSPH::step(double deltaTime){
 
   long t1 = Time::getMilliseconds();
-  
-  if(_parameters->enableAdaptiveTimeStep)
-    updateTimeStepCFL();
-  else
-    _parameters->stepSize = _parameters->m_defaultStepSize;
+
+  helperStep(deltaTime);
   
   //  #pragma omp parallel for  
   for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
     unsigned int fluidIndex = particleManager->fluidIndicies[fI];
     for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
 
-      // update by delta x, reset delta_x vectors
-      compute_position_update(fluidIndex, i);
+      compute_prev_position_update(fluidIndex, i);
+      compute_external_forces(fluidIndex, i);    
+      compute_semi_implicit_euler(fluidIndex, i, deltaTime);
+
       
     }
   }
+    
+  // Neighborhoodsearch
+  nhSearch();
+
   
+  // Position based pressure solving
+  solvePressure();
+
   //  #pragma omp parallel for
   for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
     unsigned int fluidIndex = particleManager->fluidIndicies[fI];
     for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
 
       // change velocity, based on delta x
-      compute_velocity(fluidIndex, i, deltaTime);
+       compute_velocity(fluidIndex, i, deltaTime);
       
     }
   }
+  
 
   //#pragma omp parallel for
   for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
@@ -93,51 +100,7 @@ void TimeStepPBSPH::step(double deltaTime){
       
     }
   }
-
   
-  //  #pragma omp parallel for
-  for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
-    unsigned int fluidIndex = particleManager->fluidIndicies[fI];
-    for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
-
-      // store old positions for next velocity update      
-      compute_prev_position_update(fluidIndex, i);
-      
-    }
-  }
-
-
-
-
-  //  #pragma omp parallel for
-  for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
-    unsigned int fluidIndex = particleManager->fluidIndicies[fI];
-    for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
-
-      // Apply external forces to particles
-      compute_external_forces(fluidIndex, i);
-
-    }
-  }
-  
-  
-  for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
-    unsigned int fluidIndex = particleManager->fluidIndicies[fI];
-    for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
-
-      //Advance timestep
-      compute_semi_implicit_euler(fluidIndex, i, deltaTime);
-      
-    }
-  }
-
-  
-  // Neighborhoodsearch
-  nhSearch();
-
-  
-  // Position based pressure solving
-  solvePressure();
   
   for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
     unsigned int fluidIndex = particleManager->fluidIndicies[fI];
@@ -195,6 +158,17 @@ void TimeStepPBSPH::solvePressure(){
 	}
       }
 
+            //  #pragma omp for schedule(static)
+      for(int fI = 0; fI < particleManager->fluidIndicies.size(); fI++){
+	unsigned int fluidIndex = particleManager->fluidIndicies[fI];	
+	for (int i = 0; i < particleManager->getObjectSize(fluidIndex); ++i){
+
+	  // update by delta x, reset delta_x vectors
+	  compute_position_update(fluidIndex, i);
+	  
+	}
+      }
+
       iter++;
     }
   }
@@ -219,4 +193,15 @@ void TimeStepPBSPH::updateDeltaXOutput(){
   }
   
 
+}
+
+void TimeStepPBSPH::helperStep(double timeStep){
+  
+  if(_parameters->enableAdaptiveTimeStep)
+    updateTimeStepCFL();
+  else
+    _parameters->stepSize = _parameters->m_defaultStepSize;
+
+  double diameter = 2.0 * _parameters->particleRadius;
+  _parameters->particleMass = _parameters->particleMassScaling * pow(diameter, 3) * _parameters->restDensity;
 }

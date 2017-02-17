@@ -226,7 +226,7 @@ displayFluidParticles()
 	for(int bb = 0; bb < manager->m_particleObjects.size(); bb++){
 
 
-	  manager->updateFluidPositions(bb);
+	  manager->castFluidPositions(bb);
 
 	  Particles* pp = manager->m_particleObjects[bb];
 
@@ -337,13 +337,9 @@ create_fluid_particles(unsigned int setup, unsigned int observeParticle)
 
   sceneManager = new Scenes(&m_Parameters);
   manager = sceneManager->createSetup(setup, m_Parameters.h);
-
-  //  Scenes scene(&m_Parameters);
-
-  std::cout << "open " << manager->m_particleObjects.size() << std::endl;
+  
   m_SPH = new TimeStepPBSPH(manager, &m_Parameters);
 
-  std::cout << "ende " << std::endl;
   m_Parameters.observeParticle = observeParticle;
 
 }

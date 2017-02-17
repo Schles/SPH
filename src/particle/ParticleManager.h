@@ -12,7 +12,7 @@ class ParticleManager {
 public:
         ParticleManager(Parameters* params);
 	
-	void updateFluidPositions(unsigned int point_set);
+	void castFluidPositions(unsigned int point_set);
 
 	void updateDynamicBoundary(double time);
 

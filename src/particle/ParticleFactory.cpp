@@ -202,9 +202,6 @@ Boundary* ParticleFactory::createBoundingWall(Eigen::Vector3d p, Eigen::Vector3d
   unsigned int ySize = v.norm() / h;
   
   unsigned int memAllocs = xSize * ySize;
-
-  std::cout << "u " << u.norm() << std::endl;
-  std::cout << " h" << h << std::endl;
   
   Boundary* particles = createBoundingObject(memAllocs);
 

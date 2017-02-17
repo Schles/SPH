@@ -9,7 +9,7 @@ struct Parameters {
   
   double particleMass = 1.00;    // particle mass, will be set by code
 
-  double particleMassScaling = 0.8;
+  double particleMassScaling = 2.0;
   
   double restDensity = 150;       // Rest Density
   double viscosity = 0.05;        // viscosity epsilon
@@ -33,11 +33,11 @@ struct Parameters {
 
   // Settings
   
-  bool useGravity = false;         // enable gravitational force
+  bool useGravity = true;         // enable gravitational force
   bool useFriction = true;
   bool showDisplacement = true;
   bool exportFrames = false;
-  bool enableAdaptiveTimeStep = false;
+  bool enableAdaptiveTimeStep = true;
 
   bool add = false;
 

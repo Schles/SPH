@@ -18,7 +18,7 @@ class TimeStepPBSPH : protected PBSPH {
   void solvePressure();
   void updateDeltaXOutput();  
   int visualizeAmount = 1;
-
+  void helperStep(double deltaTime);
   
 };
 

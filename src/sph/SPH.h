@@ -19,8 +19,6 @@ public:
 	// initialize new SPH system
 	SPH(ParticleManager *manager, Parameters *params);
 
-
-	std::vector<Particles*> *m_particleObjects;
 	Statistics* m_statistics;
 	
 	// update particle positions using semi-implicit euler method
@@ -28,6 +26,8 @@ public:
 	void nhSearch();
 	void initParticles();
 
+	void addParticleSet(int fluidIndex);
+	
 	void updateTimeStepCFL();
 protected:
 	Kernel *m_kernel;
