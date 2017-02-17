@@ -44,6 +44,7 @@ struct Parameters {
   // Constants
   
   const double cs = 2.0;                // Speed of sound in medium
+  const int veloUpdateMethod = 0;// velocity update method
   const unsigned int kernelFunctionId = 4;  // use precached cubic spline kernel fkt
   
   const Eigen::Vector3d graviationalForce = Eigen::Vector3d(0.0, -98.1, 0.0); // scale with 10 to increase sim speed

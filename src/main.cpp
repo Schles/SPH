@@ -47,10 +47,7 @@
 #include "ParticleExporter.h"
 #include "Parameters.h"
 
-#include "SPH/SimpleSPH.h"
-#include "SPH/ImprSPH.h"
-#include "SPH/PBSPH.h"
-#include "SPH/SmoothedParticleHydrodynamics.h"
+#include "SPH/TimeStep.h"
 
 
 using namespace Eigen;
@@ -204,7 +201,7 @@ Parameters                                 m_Parameters;
 ParticleManager*                           manager;
   Scenes *sceneManager;
   
-PBSPH* m_SPH; //Pressure Solver
+TimeStepPBSPH* m_SPH; //Pressure Solver
 
 
 
@@ -243,7 +240,7 @@ displayFluidParticles()
 	    double radius = g_bb_radius;
 
 	    if(pp->isFluid)
-	      radius = m_Parameters.particleRadius / 10;
+	      radius = m_Parameters.particleRadius / 8;
 	    
 	    viz->uniform_sphere.set_buffer_data(radius, g_projection_radius);
 
@@ -284,6 +281,7 @@ closeFunc()
 {
     viz = nullptr;
 }
+
 
 unsigned int fileIter = 0;
 
@@ -344,7 +342,7 @@ create_fluid_particles(unsigned int setup, unsigned int observeParticle)
   //  Scenes scene(&m_Parameters);
 
   std::cout << "open " << manager->m_particleObjects.size() << std::endl;
-  m_SPH = new PBSPH(manager, &m_Parameters);
+  m_SPH = new TimeStepPBSPH(manager, &m_Parameters);
 
   std::cout << "ende " << std::endl;
   m_Parameters.observeParticle = observeParticle;

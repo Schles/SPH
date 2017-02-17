@@ -2,10 +2,7 @@
 #include <math.h>
 
 ParticleManager::ParticleManager(Parameters *params){
-  //    particlesBB = 0;
-    //    particlesFluid = 0;
-    m_Params = params;
-   
+    m_Params = params;   
 }
 
 
@@ -35,9 +32,6 @@ void ParticleManager::updateDynamicBoundary(double time){
 }
 
 void ParticleManager::updateFluidPositions(unsigned int point_set){
-
-
-
   
   for (int i = 0; i < m_particleObjects[point_set]->position.size(); ++i)
 	{
@@ -68,22 +62,7 @@ void ParticleManager::resizeOutputBuffer(unsigned int bufferId, unsigned int siz
 }
 
 
-void ParticleManager::initParticleBuffer(unsigned int size){
-  std::cout << "!!!!!!!!!!!!!!!!!!!! " << std::endl;
-  Particles* particles = new Particles();
-  
-  particles->position.resize(size);
-  particles->position0.resize(size);
-  particles->velocity.resize(size);
-  particles->color.resize(size);
-  
-   
-  m_particleObjects.push_back(particles);
 
-
-  // Init output buffer
-  resizeOutputBuffer(0, size);
-}
 
 unsigned int ParticleManager::addParticles(Particles* particles){
 
@@ -99,40 +78,37 @@ unsigned int ParticleManager::addParticles(Particles* particles){
   return index;
 }
 
-void ParticleManager::simpleTest(){
 
-  Boundary* particles = new Boundary();
-  
-  int memAllocs = 4;
-  
-  //    particlesBB += memAllocs;
-
-    particles->position.resize(memAllocs);
-    particles->color.resize(memAllocs);
-    particles->m_boundaryPsi.resize(memAllocs);
-
-    resizeOutputBuffer(1, memAllocs);
-
-    int memOffset = 0;
-
-    Eigen::Vector3d boundryColor(0.0,0.0,0.0);
-
-    // Z Planes
-
-    particles->position[0] = Eigen::Vector3d( 0.02, 0.0, 0.02 );
-    particles->color[0] = boundryColor;
-
-    particles->position[1] = Eigen::Vector3d( 0.02, 0.0, -0.02 );
-    particles->color[1] = boundryColor;
-
-    particles->position[2] = Eigen::Vector3d( -0.02, 0.0, 0.02 );
-    particles->color[2] = boundryColor;
-
-    particles->position[3] = Eigen::Vector3d( -0.02, 0.0, -0.02 );
-    particles->color[3] = boundryColor;
-
-	    
-    m_particleObjects.push_back(particles);
-
+Eigen::Vector3d &ParticleManager::getPosition(unsigned int point_set, unsigned int i){
+  return (m_particleObjects)[point_set]->position[i];
 }
 
+Particles* ParticleManager::getObject(unsigned int i){
+  return m_particleObjects[i];
+}
+
+Boundary* ParticleManager::getBoundaryObject(unsigned int i){
+  return static_cast<Boundary*>((m_particleObjects)[i]);
+}
+
+Fluid* ParticleManager::getFluidObject(unsigned int i){
+  return static_cast<Fluid*>((m_particleObjects)[i]);
+}
+
+unsigned int ParticleManager::getObjectSize(unsigned int i){
+  return (m_particleObjects)[i]->position.size();
+}
+
+unsigned int ParticleManager::getParticleGroupSize(){
+  return m_particleObjects.size();
+}
+
+
+bool ParticleManager::isFluid(unsigned int point_set_id){
+  for(int i = 0; i < fluidIndicies.size(); i++){
+    if(point_set_id == fluidIndicies[i])
+      return true;
+  }
+
+  return false;
+}

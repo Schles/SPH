@@ -239,9 +239,9 @@ Fluid* ParticleFactory::createFluidObject(unsigned int memAllocs){
   particles->velocity.resize(memAllocs);
   particles->color.resize(memAllocs);
 
-  particles->velocity_viscosity.resize(memAllocs);
+
   particles->density.resize(memAllocs);
-  particles->density_fac.resize(memAllocs);
+
 
   particles->acceleration.resize(memAllocs);
 

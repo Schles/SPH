@@ -11,38 +11,40 @@
 class ParticleManager {
 public:
         ParticleManager(Parameters* params);
-	/*
-        std::vector<Eigen::Vector3d>			   m_vertices_fluid_particles;
-        std::vector<int>                                   m_vertices_attribute;
-        std::vector<Eigen::Vector3d>			   m_materials;
-        std::vector<Eigen::Vector3d>			   m_velocities;
-	*/
-
-	std::vector<Particles*> m_particleObjects;
-		
-	//        unsigned int particlesFluid;
-        //unsigned int particlesBB;
-
-	std::vector<int> fluidIndicies;
 	
 	void updateFluidPositions(unsigned int point_set);
 
 	void updateDynamicBoundary(double time);
 
+	unsigned int addParticles(Particles* particles);
+
 	void resizeOutputBuffer(unsigned int bufferId, unsigned int size);
 	
-	void initParticleBuffer(unsigned int size);
+
+
+	Parameters *m_Params;
+	
+	std::vector<Particles*> m_particleObjects;
+	std::vector<int> fluidIndicies;
 	
 	std::vector<std::vector<Eigen::Vector3f>> m_fluid_position_output;
 	std::vector<std::vector<Eigen::Vector3f>> m_fluid_color_output;
 
+	bool isFluid(unsigned int point_set_id);
 
-	unsigned int addParticles(Particles* particles);
+	Particles* getObject(unsigned int i);
+	Boundary* getBoundaryObject(unsigned int i);
+	Fluid* getFluidObject(unsigned int i);
+
+	unsigned int getParticleGroupSize();
+	unsigned int getObjectSize(unsigned int i);
+	Eigen::Vector3d &getPosition(unsigned int point_set, unsigned int i);
 	
-	Parameters *m_Params;
+
+
+
 	
- private:
-	void simpleTest();
+
 
 };
 
